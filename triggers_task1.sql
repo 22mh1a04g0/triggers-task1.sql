@@ -1,4 +1,4 @@
-CREATE TABLE employee1(
+CREATE TABLE employee(
     empid INT PRIMARY KEY,
     ename VARCHAR(50),
     designation VARCHAR(50),
@@ -31,7 +31,7 @@ use trigger_;
 delimiter @@
 create trigger negitive_sal
 before insert
-on employee1
+on employee
 for each row
 begin
 if new.salary<0 then
@@ -49,23 +49,23 @@ insert into employee1 values(101,'mallika','manager','mallika@gmail.com',900);
 delimiter !!
 create trigger automatic_sal
 before insert
-on employee1
+on employee
 for each row
 begin
 if new.salary is null then
-set new.salary=1500;
+set new.salary=15000;
 end if;
 end !!
 delimiter ;
-insert into employee1 values(101,'mallika','manager','mallika@gmail.com',null);
-select * from employee1;
+insert into employee values(101,'mallika','manager','mallika@gmail.com',null);
+select * from employee;
 
 -- 3. Create a **BEFORE INSERT** trigger to change the salary to **₹10,000** if the entered salary is less than **₹10,000**.
 
 DELIMITER //
 CREATE TRIGGER update_low_salary
 BEFORE INSERT
-ON employee1
+ON employee
 FOR EACH ROW
 BEGIN
 IF NEW.salary < 10000 THEN
@@ -73,21 +73,21 @@ SET NEW.salary = 10000;
 END IF;
 END //
 DELIMITER ;
-insert into employee1 values(102,'mallika','manager','malli@gmail.com',2000);
-select * from employee1;
+insert into employee values(102,'mallika','manager','malli@gmail.com',2000);
+select * from employee;
 
 -- 4. Create an **AFTER INSERT** trigger to store a message like **"Employee <Employee_Name> Added Successfully"** 
 -- along with the current date and time in the `employee_history` table whenever a new employee is added.
 DELIMITER $$
 CREATE TRIGGER employee_after_insert
 after INSERT
-ON employee1
+ON employee
 FOR EACH ROW
 BEGIN
 insert into  employee_history(message,created_on) values(concat('employee', new.ename, 'added succesfully'),now());
 end $$
 delimiter ;
-insert into employee1 values(103,'rama','developer','rama@gmail.com',25000);
+insert into employee values(103,'rama','developer','rama@gmail.com',25000);
 select * from employee_history;
 
 
@@ -96,7 +96,7 @@ select * from employee_history;
 delimiter %%
 create trigger salary_after_update
 after update
-on employee1
+on employee
 for each row
 begin
 if old.salary<>new.salary then
@@ -104,7 +104,7 @@ insert into salary_log(empid,old_salary,new_salary,updated_on) values(new.empid,
 end if;
 end%%
 delimiter ;
-update employee1 set salary=34000 where empid=101;
+update employee set salary=34000 where empid=101;
 select * from salary_log;
 
 
@@ -113,7 +113,7 @@ select * from salary_log;
 delimiter @@
 create trigger salary_before_update
 before update
-on employee1
+on employee
 for each row
 begin
 if new.salary<old.salary then
@@ -122,8 +122,8 @@ set message_text='salary should not be reduced';
 end if;
 end @@
 delimiter ;
-update employee1 set salary=44000 where empid=101;
-select * from employee1;
+update employee set salary=44000 where empid=101;
+select * from employee;
 
 
 -- 7. Create a **BEFORE DELETE** trigger to prevent deleting employees whose designation is **"Manager"**. 
@@ -141,7 +141,7 @@ BEGIN
     END IF;
 END //
 DELIMITER ;
-delete from employee1 where empid=101;
-select * from employee1;
+delete from employee where empid=101;
+select * from employee;
 
 
